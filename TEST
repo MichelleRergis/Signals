@@ -1,0 +1,103 @@
+%  School: Tecnologico de Monterrey Campus Estado de Mexico
+%  Autor:     Rergis Novelo Michelle and Marisol S. Ramírez Herrera
+%  Fecha:     September 6, 2024
+%  Materia:  Analysis of Signals and Systems
+%  Programa:  TEST.mlx
+%  Objective:  4.In your report you will show a graph of your voice in time and frequency.
+clear all; close all; clc
+recObj = audioread('Mich01.wav');    % The wav file generated with GrabaFilesWav.mlx is read.
+% Time axis for the Plot
+q      = 5;                          % Duration of recordings
+qa     = numel(recObj);              % Gets the total number of elements of the audio read.
+t      = (0:q/qa:q-q/qa)';           % Within the time scale q the file values are divided into
+% Calculate the sampling frequency
+Ts       = q/qa;                     % Sampling time
+fs       = 1/Ts;                     % Sampling frequency
+[na, nb] = size(t(:));               % na = number of signal points
+ff       = fs*[0:na-1]/na - fs/2;
+figure('Name','Measured Data from Michelle files');      % Creates a new figure window
+plot(t, recObj);                     % 2D line graphics
+xlabel('Time (secs)');               % Generates the title of x
+ylabel('Amplitude (V)');             % Generates the title of y
+title('Waveform of Recorded Voice'); % Generates the title of the graphics
+%{
+ Objective: 5.Perform a statistical analysis of your voice amplitude in the time domain,
+           i.e. histogram, mean, variance, standard deviation, skewness, kurtosis,
+           dispersion (var/std), cumulative distribution function (cdf), probability distribution function (pdf).
+           probability distribution function (pdf). Display cdf, pdf and histogram plots as well as data in a table.
+%}
+% Statistical Analysis
+mean_val       = mean(recObj);        % Media
+var_val        = var(recObj);         % Variance
+std_val        = std(recObj);         % Standard variation (typical)
+skewness_val   = skewness(recObj);    % value of the skewness (or skewness) of the data distribution, and measures how the values are distributed around the mean.
+kurtosis_val   = kurtosis(recObj);    % kurtosis - indicates whether your signal has more or less extreme values (very large or small amplitudes) than expected in a normal distribution.
+dispersion_val = var_val / std_val;   % dispersion
+% Histogram
+%{
+ The histogram is a graphical representation of the frequency distribution of data values.
+ In this case: It shows you how the amplitudes of your voice signal are distributed.
+               It helps you visualize which amplitude ranges occur most frequently.
+               It allows you to identify whether the signal is symmetrical or skewed, and whether it has outliers or extremes %}
+figure;
+histogram(recObj, 50);
+xlabel('Amplitude');
+ylabel('Frequency');
+title('Histogram of Amplitude');
+% Cumulative Distribution Function (CDF)
+figure;
+cdfplot(recObj);
+xlabel('Amplitude');
+ylabel('CDF');
+title('Cumulative Distribution Function (CDF)');
+% PDF estimation using kernel estimator
+figure;
+[f_pdf, xi_pdf] = ksdensity(recObj);  % PDF Estimate
+plot(xi_pdf, f_pdf);
+xlabel('Amplitude');
+ylabel('PDF');
+title('Probability Density Function (PDF)');
+% Results
+stat_table = table(mean_val, var_val, std_val, skewness_val, ...
+   kurtosis_val, dispersion_val, 'VariableNames', ...
+   {'Mean', 'Variance', 'Std_Deviation', 'Skewness', ...
+   'Kurtosis', 'Dispersion'});
+disp('Statistical Analysis Results:');
+disp(stat_table);
+%{
+ Obtain the autocorrelation of your signal (find out how to do it in MATLAB), plot the autocorrelation.
+%}
+% Autocorrelation
+%{
+   Autocorrelation measures the similarity of the signal to itself at different time delays, which can reveal repetitive patterns or periodicity in the signal.
+   time delays, which can reveal repetitive patterns or periodicity in the signal.
+%}
+% Calculate the autocorrelation of the recorded signal.
+[autocorr, lags] = xcorr(recObj, 'normalized');  % 'normalized' normalizes the autocorrelation
+% Graphing autocorrelation
+figure;
+plot(lags, autocorr);
+xlabel('Lags');
+ylabel('Autocorrelation');
+title('Autocorrelation of Recorded Voice Signal');
+%{
+ Obtain the frequency domain representation of your speech signal (Fourier transform).
+            Since it is a complex signal, obtain the square of its magnitude (spectral density) and plot it on a graph.
+            show it on a graph. Provide a description of your signal with respect to frequency content or concentration.
+%}
+% Signal modulation (optional, does not affect statistical analysis)
+cs   = cos(2*pi*fs*t);
+mods = cs.*recObj;
+figure;
+plot(ff, fftshift(abs(fft(recObj))),'r')         %  fft- Fast Fourier Transform
+xlabel('Frequency (Hz)')
+ylabel('Magnitude (V)')
+title('Frequency Spectrum of Recorded Voice');
+%{
+ Objective:   Take now its autocorrelation, obtain its Fourier transform and represent it graphically. Note the similarities and differences with respect to the frequency domain representation you just obtained.  the frequency domain representation you have just obtained. %}
+% Plotting the autocorrelation with the fourier transform
+figure;
+plot(lags, fftshift(abs(fft(autocorr))),'r')         %  fft- Fast Fourier Transform for correlation
+xlabel('Frequency (Hz)')
+ylabel('Magnitude (V)')
+title('Frequency Spectrum of Recorded Voice');
