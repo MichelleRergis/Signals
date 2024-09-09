@@ -1,0 +1,164 @@
+%  School: Tecnologico de Monterrey Campus Estado de Mexico
+%  Autor:     Rergis Novelo Michelle and Marisol S. Ramírez Herrera
+%  Date:     September 6, 2024
+% Subject:   Analysis of Signals and Systems
+%  Program:  TEST3.mlx
+%  Objective:  Reads the average file and compares it to other files to
+% identify
+%{
+4.Repeat the frequency domain with your averaged signal.
+5. Objective: Now obtain samples of different people reading the same text and compare them.
+ First compare the signals in the time domain, in the frequency domain with your first signal and then with your average signal.
+ with your first signal and then with your average signal. Discuss the similarities and differences
+ in the graphs and in the values in the tables.
+
+
+%}
+
+
+% Recording parameters
+fs  = 44100;  % recording sampling frequency that allows to homologate the audios
+q   = 5;      % Recording duration in seconds
+% Record voice for q seconds
+AudioRec = audiorecorder(fs,24,1); % audio is recorded in mono
+disp('Start speaking.')
+recordblocking(AudioRec, q);
+disp('End of Recording.');
+AudioRecDt=AudioRec.getaudiodata();
+audiowrite('Usuario.wav',AudioRecDt,fs);
+
+
+AudioProm = audioread('SolProm.wav');
+Audio01   = audioread('Sol01.wav'  );
+Audio02   = audioread('Mich05.wav' );
+Audio03   = audioread('Marzy01.wav');
+Audio04   = audioread('Mari01.wav' );
+Audio05   = audioread('Pablo01.wav');
+Audio06   = audioread('Usuario.wav');
+
+
+% Time axis
+qa  = numel(AudioProm);
+qa1 = numel(Audio01);
+qa2 = numel(Audio02);
+qa3 = numel(Audio03);
+qa4 = numel(Audio04);
+qa5 = numel(Audio05);
+qa6 = numel(Audio06);
+
+
+% Time axis for the Plot
+q   = 5;                          % Duration of recordings
+% Calculate the sampling frequency
+t  = (0:q/qa:q-q/qa)';
+Ts = q/qa;  % Sampling time
+fs = 1/Ts;  % Sampling frequency
+fs1 = 1/(q/qa1);  % Sampling frequency
+fs2 = 1/(q/qa2);  % Sampling frequency
+fs3 = 1/(q/qa3);  % Sampling frequency
+fs4 = 1/(q/qa4);  % Sampling frequency
+fs5 = 1/(q/qa5);  % Sampling frequency
+fs6 = 1/(q/qa5);  % Sampling frequency
+
+
+figure('Name','Measured Data from Michelle Original File vs Michelle Average');      % Creates a new figure window
+plot(t,Audio01, t,AudioProm);          % 2D line graphics
+xlabel('Time (secs)');               % Generates the title of x
+ylabel('Amplitude (V)');             %Generates the title of y
+title('Waveform of Recorded Voice'); % Generates the title of the graph
+
+
+figure('Name','Measured Data from Michelle Original File vs Other Files');      % Creates a new figure window
+plot(t,Audio01, t,Audio03, t,Audio04, t,Audio05);          % 2D line graphics
+xlabel('Time (secs)');               % Generates the title of x
+ylabel('Amplitude (V)');             % Generates the title of y
+title('Waveform of Recorded Voice'); % Generates the title of the graph
+%{
+6.Analyze whether your voice could be detected as different from that of others,
+ explain your conclusions and comment on how you would approach the task of detecting your voice from that of others.
+ from that of others.
+%}
+
+
+
+
+The voices can be compared by obtaining the differences between the original voice and the others.
+% between the original voice and the rest of the voices through the subtraction of
+% values, obtaining the minimum value between the comparisons and thus
+% to identify if it is the voice of analysis
+V0     = normalizar(AudioProm);
+Voz0   = abs(fft(V0));
+Voz0   = Voz0.*conj(Voz0);
+Voz0f  = Voz0(5:104);
+Voz0fn = Voz0f/sqrt(sum(abs(Voz0f).^2));
+
+
+V1     = normalizar(Audio01);
+Voz1   = abs(fft(V1));
+Voz1   = Voz1.*conj(Voz1);
+Voz1f  = Voz1(5:104);
+Voz1fn = Voz1f/sqrt(sum(abs(Voz1f).^2));
+
+
+V2     = normalizar(Audio02);
+Voz2   = abs(fft(V2));
+Voz2   = Voz2.*conj(Voz2);
+Voz2f  = Voz2(5:104);
+Voz2fn = Voz2f/sqrt(sum(abs(Voz2f).^2));
+
+
+V3     = normalizar(Audio03);
+Voz3   = abs(fft(V3));
+Voz3   = Voz3.*conj(Voz3);
+Voz3f  = Voz3(5:104);
+Voz3fn = Voz3f/sqrt(sum(abs(Voz3f).^2));
+
+
+V4     = normalizar(Audio04);
+Voz4   = abs(fft(V4));
+Voz4   = Voz4.*conj(Voz4);
+Voz4f  = Voz4(5:104);
+Voz4fn = Voz4f/sqrt(sum(abs(Voz4f).^2));
+
+
+V5     = normalizar(Audio05);
+Voz5   = abs(fft(V5));
+Voz5   = Voz5.*conj(Voz5);
+Voz5f  = Voz5(5:104);
+Voz5fn = Voz5f/sqrt(sum(abs(Voz5f).^2));
+
+
+V6     = normalizar(Audio06);
+Voz6   = abs(fft(V6));
+Voz6   = Voz6.*conj(Voz6);
+Voz6f  = Voz6(5:104);
+Voz6fn = Voz6f/sqrt(sum(abs(Voz6f).^2));
+
+
+
+
+Error(1) = mean(abs(Voz6fn - Voz1fn));
+Error(2) = mean(abs(Voz6fn - Voz2fn));
+Error(3) = mean(abs(Voz6fn - Voz3fn));
+Error(4) = mean(abs(Voz6fn - Voz4fn));
+Error(5) = mean(abs(Voz6fn - Voz5fn));
+
+
+min_error=min(Error);
+switch min_error
+   case Error(1)
+       disp('Solecito');
+   case Error(2)
+       disp('Michelle');
+   case Error(3)
+       disp('Marzy');
+   case Error(4)
+       disp('Mary');
+   case Error(5)
+       disp('Pablo');
+   otherwise
+       disp('Unknown user');
+end
+
+
+disp(Error);
