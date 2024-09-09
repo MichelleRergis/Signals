@@ -1,0 +1,36 @@
+%  School: Tecnologico de Monterrey Campus Estado de Mexico
+%  Author:     Rergis Novelo Michelle and Marisol S. Ramírez Herrera
+%  Date:     September 6, 2024
+% Subject:   Analysis of Signals and Systems
+%  Program:  GrabaFilesWav.mlx
+%  Objective:  Define a phrase or sentence to be read by different people (i.e., team members).
+% “Be the change you want to see in the world” -Mahatma Gandhi
+Read the text yourself and record your voice. You can review the attached file
+% attached with a MATLAB program to develop this task.
+% 3.The program will show you a time and frequency content of your voice reading the text.
+%Recording parameters
+fs  = 44100;  % sampling frequency of recording allowing to homologate the audios
+q   = 5;      % Duration of recording in seconds
+% Record the voice for q seconds
+recObj = audiorecorder(fs,24,1); % audio is recorded in mono
+disp('Start speaking.')
+recordblocking(recObj, q);
+disp('End of Recording.');
+% Play back the recording
+x=recObj.getaudiodata();
+audiowrite('Mich01.wav',x,fs);
+disp('Audio guardado');
+sound(x,fs);
+% Time axis for the Plot
+qa     = numel(x);              Gets the total number of elements of the audio read.
+t      = (0:q/qa:q-q/qa)';           % Within the time scale q the file values are divided
+% Calculate sampling frequency
+Ts       = q/qa;                     % Sampling time
+fs       = 1/Ts;                     %   Sampling frequency
+[na, nb] = size(t(:));               % na = number of signal points
+ff       = fs*[0:na-1]/na - fs/2;
+figure('Name','Measured Data from Michelle files');      %  Creates a new figure window
+plot(t, x);                     % 2D line graphics
+xlabel('Time (secs)');               % Generates the title of x
+ylabel('Amplitude (V)');             % Generates the title of y 
+title('Waveform of Recorded Voice'); % Generates the title of the graphic
