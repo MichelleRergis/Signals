@@ -1,0 +1,26 @@
+%  School: Tecnologico de Monterrey Campus Estado de Mexico
+%  Author:     Rergis Novelo Michelle & Marisol S. Ramírez Herrera
+%  Date:     September 6, 2024
+%  Subject:   Analysis of Signals and Systems
+%  Program:  TEST4.mlx
+%  Objective:  Transcribe the audio using the speech2text function. It uses neural networks to enhance the vocabulary and is enriched with data from Google and Azure. In this exercise, it only uses the basic learning from the default training.
+clear all; close all; clc
+% Installation for speech2text
+downloadFile    = matlab.internal.examples.downloadSupportFile("audio","wav2vec2/wav2vec2-base-960.zip");
+wav2vecLocation = fullfile(tempdir,"wav2vec");
+unzip(downloadFile,wav2vecLocation)
+addpath(wav2vecLocation)
+speechClient("wav2vec2.0");   %Verifies the library has been installed. 
+% Reads the sample for testing
+[samples,fs] = audioread("Sol20.wav");
+sound(samples,fs);
+transcript = speech2text(samples,fs);
+disp(transcript);
+AudioRec = audiorecorder(fs,24,1);         % records the audio
+disp('Start speaking.');                   % begins the recording
+q   = 5;                                   % duration in seconds
+recordblocking(AudioRec, q);               % the sample audio starts
+disp('End of Recording.');                 % the sample audio concludes
+AudioRecDt = AudioRec.getaudiodata();      % obtains the audio’s data
+transcript = speech2text(AudioRecDt,fs);   % Use the function to transcribe audio
+disp(transcript);                          % Prints the result of the transcription
